@@ -1,0 +1,49 @@
+API calls:
+
+GET /api/blogs
+    returns blog names and ids
+
+GET /api/blogs/:blogID 
+    returns blog name, post names and ids
+
+GET /api/posts/:blogID
+    returns all posts for a given blog
+
+GET /api/posts/:blogID/:postID
+    returns a specific post
+
+POST /api/blogs 
+    add a new blog
+
+POST /api/posts/:blogID
+    add a new post
+
+PUT /api/blogs/:blogID
+    edit blog (title)
+
+PUT /api/posts/:blogID/:postID
+    edit post 
+
+PUT /api/repost/:oldBlogID/:postID/:newBlogID
+    "repost" a post from one blog to another
+
+DELETE /api/blogs/:blogID
+    delete blog
+
+DELETE /api/posts/:blogID/:postID
+    Delete post
+
+DB Schema:
+
+blogDB
+    blogs collection schema:
+        _id: id object
+        name: string
+        posts: array of id objects
+    posts collection schema:   
+        _id: id object
+        title: string
+        original_blog: id object
+        date_created: ???
+        date_updated: ???
+        content: string
