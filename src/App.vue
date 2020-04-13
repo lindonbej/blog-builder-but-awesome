@@ -1,32 +1,51 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <div id="brand">
+        <h1>Blog Builder</h1>
+      </div>
+      <div id="menu">
+        <router-link to="/">
+          <p>Blog</p>
+        </router-link>
+        <router-link to="/edit">
+          <p>Edit</p>
+        </router-link>
+      </div>
     </div>
-    <router-view/>
+    <router-view />
+    <div id="footer">
+      <p>Source code for this website available on <a href="https://github.com/lindonbej/blog-builder">Github</a></p>
+    </div>
   </div>
 </template>
 
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
 }
 
 #nav {
   padding: 30px;
+  background: #414141;
+  text-align: center;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+#footer {
+  background: #414141;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+#nav p {
+  display: inline;
+  padding: 10px;
 }
+
+#nav a, h1 {
+  color: white;
+}
+
+#footer p, #footer a {
+  color: white;
+}
+
 </style>
