@@ -1,20 +1,24 @@
 <template>
   <div class="edit">
+    <h1>Edit Blog</h1>
+    <button @click="read()">Read this blog</button>
     <div id="edit-field" v-if="editMode">
-      <EditBox v-bind:post="selectedPost" v-on:closed="closeEditBox"/>
+      <EditBox v-bind:post="selectedPost" v-bind:blogID="blogID" v-on:closed="closeEditBox"/>
     </div>
     <div id="edit-nav" v-else>
-      <form id="title-edit" v-on:submit.prevent="save">
+      <form id="blog-edit" v-on:submit.prevent="save">
         <label for="title">Title</label>
         <input type="text" id="title" v-model="title"/>
-        <input id="save-title-button" type="submit" value="Save">
+        <label for="author">Author</label>
+        <input type="text" id="author" v-model="author"/>
+        <input id="save-blog-button" type="submit" value="Save">
       </form>
       <button id="new-post-button" v-on:click="newPost">Create New Post</button>
       <div id="edit-list">
         <h6 id="edit-list-title">Posts (click to edit)</h6>
         <ul id="posts">
           <li v-for="post in posts" v-bind:key="post.id">
-            <button class=post-button v-on:click="selectPost(post)">{{post.title}}</button>
+            <button class=post-button v-on:click="selectPost(post.id)">{{post.title}}</button>
           </li>
         </ul>      
       </div>
@@ -24,6 +28,7 @@
 
 <script>
 import EditBox from "../components/EditBox.vue"
+import axios from 'axios'
 export default {
   name: 'Edit',
   components: {
@@ -31,27 +36,77 @@ export default {
   },
   data() {
     return {
-      posts: this.$root.$data.posts,
+      blogs: [],
+      posts: [],
       editMode: false,
       selectedPost: undefined,
-      title: this.$root.$data.title,
+      title: this.$route.params.blog_name.replace(/-/g, " "),
+      author: "",
     }
   },
+  computed: {
+    blogID() {
+      let blog = this.blogs.find(blog => blog.name === this.$route.params.blog_name.replace(/-/g, " "));
+      if (blog) {
+        return blog.id;
+      } else {
+        return "";
+      }
+    }
+  },
+  created() {
+    this.updateBlogs();
+  },
   methods: {
-    selectPost(post) {
-      this.selectedPost = post;
+    async selectPost(postID) {
+      let response = await axios.get('/api/posts/' + this.blogID + '/' + postID);
+      this.selectedPost = response.data;
       this.editMode = true;
     },
     closeEditBox() {
       this.editMode = false;
       this.selectedPost = undefined;
+      this.updateBlogInfo();
     },
     newPost() {
       this.selectedPost = undefined;
       this.editMode = true;
     },
-    save() {
-      this.$root.$data.title = this.title;
+    async save() {
+      try {
+        let response = await axios.put('/api/blogs/' + this.blogID, {
+          name: this.title,
+          author: this.author
+        });
+        if (response.status == 409) {
+          console.log("Duplicate name!");
+        } else {
+          this.$router.replace('/edit/' + this.title.replace(/\s/g, "-"));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async updateBlogs() {
+      let response = await axios.get('/api/blogs');
+      this.blogs = response.data.blogs;
+    },
+    async updateBlogInfo() {
+      let response = await axios.get('/api/blogs/' + this.blogID);
+      this.posts = response.data.posts;
+      this.author = response.data.author;
+    },
+    read() {
+      this.$router.push('/read/' + this.$route.params.blog_name.replace(/\s/g, "-"));
+    }
+  },
+  watch: {
+    blogID() {
+      //console.log("blogID watcher");
+      this.updateBlogInfo();
+    },
+    $route() {
+      this.updateBlogs();
     }
   }
 }
@@ -91,11 +146,15 @@ export default {
     margin-top: 15px;
   }
 
-  #title-edit, #new-post-button, #edit-list {
+  #blog-edit, #new-post-button, #edit-list {
     margin-top: 20px;
   }
 
-  #new-post-button, #save-title-button, #title {
+  #new-post-button, #save-blog-button, #title, #author {
     font-size: 20px;
+  }
+
+  h1 {
+    color: black;
   }
 </style>

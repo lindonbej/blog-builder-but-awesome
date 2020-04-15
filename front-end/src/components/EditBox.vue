@@ -18,9 +18,11 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: "EditBox",
   props: {
+    blogID: String,
     post: Object,
   },
   data() {
@@ -51,38 +53,32 @@ export default {
     close() {
       this.$emit("closed");
     },
-    save() {
+    async save() {
       this.added = true;
       if (this.title === "") {
         this.title = "Untitled";
       }
       if (this.post == undefined && this.id == -1) {
-        if (this.$root.$data.posts.length == 0) {
-          this.id = 0;
-        } else {
-          this.id = this.$root.$data.posts[0].id + 1;
-        }
         let post = {
-          id: this.id,
           title: this.title,
-          dateCreated: Date(),
-          dateUpdated: undefined,
+          original_blog: this.blogID,
+          date_created: Date(),
+          date_updated: undefined,
           content: this.content
         }
-        this.$root.$data.posts.unshift(post);
+        await axios.post('/api/posts/' + this.blogID, post);
       } else {
-        let postIdx = this.$root.$data.posts.findIndex(post => post.id == this.id);
-        let post = this.$root.$data.posts[postIdx];
-        post.title = this.title;
-        post.content = this.content;
-        post.dateUpdated = Date();
-        this.$root.$data.posts[postIdx] = post;
+        let update = {
+          title: this.title,
+          dateUpdated: Date(),
+          content: this.content
+        }
+        await axios.put('/api/posts/' + this.blogID + '/' + this.post.id, update);
       }
     },
-    deletePost() {
+    async deletePost() {
       if (this.id != -1) {
-        let postIdx = this.$root.$data.posts.findIndex(post => post.id == this.id);
-        this.$root.$data.posts.splice(postIdx, 1);
+        await axios.delete('/api/posts/' + this.blogID + '/' + this.post.id);
       }
       this.$emit("closed");
     }

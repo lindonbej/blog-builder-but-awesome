@@ -5,7 +5,7 @@ import router from './router'
 Vue.config.productionTip = false
 
 let data = {
-  server: "localhost:3000"
+  blogs: []
 }
 
 new Vue({

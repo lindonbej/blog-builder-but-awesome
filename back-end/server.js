@@ -31,7 +31,7 @@ const postSchema = new mongoose.Schema({
   original_blog: String,
   date_created: Date,
   date_updated: Date,
-  content: String
+  content: [String]
 })
 const Post = mongoose.model('Post', postSchema)
 
@@ -51,7 +51,7 @@ app.get('/api/blogs', async (req, res) => {
 /* returns post names and ids for a given blog  */
 app.get('/api/blogs/:blogID', async (req, res) => {
   try {
-    let blogInfo = await Blog.findOne({id: req.params.blogID}, 'posts -_id');
+    let blogInfo = await Blog.findOne({id: req.params.blogID}, '-_id');
     if (blogInfo) {
       res.send(blogInfo);
     } else {
@@ -96,15 +96,21 @@ app.get('/api/posts/:blogID/:postID', async (req, res) => {
     
 /* add a new blog  */
 app.post('/api/blogs', async (req, res) => {
-  const blog = new Blog({
-    id: uuidv4(),
-    name: req.body.name,
-    author: req.body.author,
-    posts: []
-  })
   try {
-    await blog.save();
-    res.send("Ok");
+    let duplicate = await Blog.findOne({name: req.body.name});
+    if (duplicate) {
+      res.status(409);
+      res.send({message: "Sorry, this blog title has already been taken"});
+    } else {
+      const blog = new Blog({
+        id: uuidv4(),
+        name: req.body.name,
+        author: req.body.author,
+        posts: []
+      })
+      await blog.save();
+      res.send("Ok");
+    }
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -140,14 +146,20 @@ app.post('/api/posts/:blogID', async (req, res) => {
 /* edit blog (title)  */
 app.put('/api/blogs/:blogID', async (req, res) => {
   try {
-    let blog = await Blog.findOne({id: req.params.blogID});
-    blog.name = req.body.name;
-    blog.author = req.body.author;
-    await blog.save();
-    res.send("Ok");
+    let duplicate = await Blog.findOne({name: req.body.name});
+    if (duplicate && duplicate.id !== req.params.blogID) {
+      res.status(409);
+      res.send({message: "Sorry, this blog title has already been taken"});
+    } else {
+      let blog = await Blog.findOne({id: req.params.blogID});
+      blog.name = req.body.name;
+      blog.author = req.body.author;
+      await blog.save();
+      res.send("Ok");
+    }
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.sendStatus(500);
   }
 })
      
@@ -166,7 +178,7 @@ app.put('/api/posts/:blogID/:postID', async (req, res) => {
     res.send("Ok");
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.sendStatus(500);
   }
 })
     
@@ -180,7 +192,7 @@ app.put('/api/blogs/:oldBlogID/:postID/:newBlogID', async (req, res) => {
     res.send("Ok");
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.sendStatus(500);
   }
 })
 
@@ -193,7 +205,7 @@ app.delete('/api/blogs/:blogID', async (req, res) => {
     res.send("Ok");
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.sendStatus(500);
   }
 })
 
@@ -211,7 +223,7 @@ app.delete('/api/posts/:blogID/:postID', async (req, res) => {
     res.send("Ok");
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.sendStatus(500);
   }
 })
 

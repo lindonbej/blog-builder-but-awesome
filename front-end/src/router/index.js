@@ -21,10 +21,15 @@ const routes = [
     component: () => import('../views/NewBlog.vue')
   },
   {
-    path: '/my-blogs',
-    name: 'MyBlogs',
-    component: () => import('../views/MyBlogs.vue')
+    path: '/read/:blog_name',
+    name: 'Read',
+    component: () => import('../components/Read.vue')
   },
+  {
+    path: '/edit/:blog_name',
+    name: 'Edit',
+    component: () => import('../components/Edit.vue')
+  }
 ]
 
 const router = new VueRouter({

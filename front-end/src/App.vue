@@ -2,7 +2,7 @@
   <div id="app">
     <div id="nav">
       <div id="brand">
-        <h1>Blog Builder But Awesome</h1>
+        <h1>OpenBlogger</h1>
       </div>
       <div id="menu">
         <router-link to="/">
@@ -13,9 +13,6 @@
         </router-link>
         <router-link to="/new">
           <p>New Blog</p>
-        </router-link>
-        <router-link to="/my-blogs">
-          <p>My Blogs</p>
         </router-link>
       </div>
     </div>

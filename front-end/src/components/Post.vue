@@ -1,8 +1,8 @@
 <template>
   <div class="post">
     <h3>{{post.title}}</h3>
-    <p>Written on {{post.dateCreated}}</p>
-    <p v-if="post.dateUpdated != undefined">Last updated on {{post.dateUpdated}}</p>
+    <p>Written on {{post.date_created}}</p>
+    <p v-if="post.dateUpdated != undefined">Last updated on {{post.date_updated}}</p>
     <p v-for="(paragraph, index) in post.content" v-bind:key="index">{{paragraph}}</p>
   </div>
 </template>
