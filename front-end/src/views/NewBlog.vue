@@ -9,6 +9,7 @@
         <input type="text" id="author" v-model="author"/>
         <input id="create-blog-button" type="submit" value="Create">
       </form>
+      <h6 v-if="duplicateError">Sorry, that name has been taken</h6>
     </div>
   </div>
 </template>
@@ -20,16 +21,22 @@ export default {
   data() {
     return {
       title: "",
-      author: ""
+      author: "",
+      duplicateError: false,
     }
   },
   methods: {
     async create() {
-      await axios.post('/api/blogs', {
-        name: this.title,
-        author: this.author
-      });
-      this.$router.push('/edit/' + this.title.replace(/\s/g, "-"));
+      this.duplicateError = false;
+      try {
+        await axios.post('/api/blogs', {
+          name: this.title,
+          author: this.author
+        });
+        this.$router.push('/edit/' + this.title.replace(/\s/g, "-"));
+      } catch (error) {
+        this.duplicateError = true;
+      }
     }
   },
 }

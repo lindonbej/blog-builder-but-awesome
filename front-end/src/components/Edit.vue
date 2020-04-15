@@ -13,6 +13,7 @@
         <input type="text" id="author" v-model="author"/>
         <input id="save-blog-button" type="submit" value="Save">
       </form>
+      <h6 v-if="duplicateError">Sorry, that name has been taken</h6>
       <button id="new-post-button" v-on:click="newPost">Create New Post</button>
       <div id="edit-list">
         <h6 id="edit-list-title">Posts (click to edit)</h6>
@@ -42,6 +43,7 @@ export default {
       selectedPost: undefined,
       title: this.$route.params.blog_name.replace(/-/g, " "),
       author: "",
+      duplicateError: false
     }
   },
   computed: {
@@ -73,18 +75,15 @@ export default {
       this.editMode = true;
     },
     async save() {
+      this.duplicateError = false;
       try {
-        let response = await axios.put('/api/blogs/' + this.blogID, {
+        await axios.put('/api/blogs/' + this.blogID, {
           name: this.title,
           author: this.author
         });
-        if (response.status == 409) {
-          console.log("Duplicate name!");
-        } else {
-          this.$router.replace('/edit/' + this.title.replace(/\s/g, "-"));
-        }
+        this.$router.replace('/edit/' + this.title.replace(/\s/g, "-"));
       } catch (error) {
-        console.log(error);
+        this.duplicateError = true;
       }
     },
     async updateBlogs() {
@@ -102,7 +101,6 @@ export default {
   },
   watch: {
     blogID() {
-      //console.log("blogID watcher");
       this.updateBlogInfo();
     },
     $route() {
