@@ -4,7 +4,7 @@ GET /api/blogs
     returns blog names and ids
 
 GET /api/blogs/:blogID 
-    returns blog name, post names and ids
+    post names and ids
 
 GET /api/posts/:blogID
     returns all posts for a given blog

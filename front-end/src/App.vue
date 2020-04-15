@@ -2,20 +2,26 @@
   <div id="app">
     <div id="nav">
       <div id="brand">
-        <h1>Blog Builder</h1>
+        <h1>Blog Builder But Awesome</h1>
       </div>
       <div id="menu">
         <router-link to="/">
-          <p>Blog</p>
+          <p>Home</p>
         </router-link>
-        <router-link to="/edit">
-          <p>Edit</p>
+        <router-link to="/explore">
+          <p>Explore Blogs</p>
+        </router-link>
+        <router-link to="/new">
+          <p>New Blog</p>
+        </router-link>
+        <router-link to="/my-blogs">
+          <p>My Blogs</p>
         </router-link>
       </div>
     </div>
     <router-view />
     <div id="footer">
-      <p>Source code for this website available on <a href="https://github.com/lindonbej/blog-builder">Github</a></p>
+      <p>Source code for this website available on <a href="https://github.com/lindonbej/blog-builder-but-awesome">Github</a></p>
     </div>
   </div>
 </template>
